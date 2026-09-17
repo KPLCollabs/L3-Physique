@@ -278,7 +278,7 @@ function drawIntensityGraph() {
         0
     );
 
-    ctxI.restore();
+    ctxI.();
 }
 
 
@@ -677,10 +677,10 @@ thetaSlider.addEventListener("input", function () {
 // ============================================================
 // ANIMATION
 // ============================================================
-
 function animate() {
 
-    // Vitesse de rotation
+    // Le temps sert uniquement à faire tourner
+    // le champ électrique incident
     t += 0.025;
 
     updateValues();
@@ -691,5 +691,6 @@ function animate() {
 
     requestAnimationFrame(animate);
 }
+
 
 animate();
