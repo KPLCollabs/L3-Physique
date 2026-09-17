@@ -2,297 +2,196 @@
     box-sizing: border-box;
 }
 
-
 body {
-
     margin: 0;
-
     font-family: Arial, sans-serif;
-
-    background: #f3f5f7;
-
+    background-color: #f3f5f7;
     color: #222;
 }
 
+/* ================= HEADER ================= */
 
 header {
-
-    background: #17202a;
-
+    background-color: #17202a;
     color: white;
-
     text-align: center;
-
     padding: 22px;
 }
 
-
 header h1 {
-
     margin: 0;
+    font-size: 28px;
 }
-
 
 header p {
-
     color: #d5d8dc;
+    margin-bottom: 0;
 }
 
+/* ================= PAGE ================= */
 
 main {
-
     max-width: 1250px;
-
     margin: 25px auto;
-
     padding: 0 20px;
 }
-
 
 /* ================= FIGURES ================= */
 
 .figures {
-
     display: grid;
-
-    grid-template-columns:
-        1fr
-        1.25fr;
-
+    grid-template-columns: 1fr 1.25fr;
     gap: 25px;
 }
 
-
 .card {
-
-    background: white;
-
+    background-color: white;
     border-radius: 12px;
-
     padding: 20px;
-
-    box-shadow:
-        0 3px 12px
-        rgba(0,0,0,0.12);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
 }
-
 
 .card h2 {
-
     text-align: center;
-
     margin-top: 0;
+    font-size: 20px;
 }
-
 
 canvas {
-
     display: block;
-
     width: 100%;
-
     height: auto;
 }
-
 
 /* ================= CONTROLES ================= */
 
 .controls {
-
-    background: white;
-
+    background-color: white;
     margin-top: 25px;
-
     padding: 20px;
-
     border-radius: 12px;
-
     text-align: center;
-
-    box-shadow:
-        0 3px 12px
-        rgba(0,0,0,0.12);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
 }
 
-
 .controls label {
-
     display: block;
-
     font-size: 20px;
-
     font-weight: bold;
-
     margin-bottom: 15px;
 }
 
-
 #thetaValue {
-
     color: #8e44ad;
 }
 
-
 #thetaSlider {
-
     width: 80%;
-}
-
-
-button {
-
-    display: block;
-
-    margin: 18px auto 0;
-
-    padding: 10px 25px;
-
-    border: none;
-
-    border-radius: 7px;
-
-    background: #8e44ad;
-
-    color: white;
-
-    font-size: 16px;
-
     cursor: pointer;
 }
 
+/* ================= BOUTON ================= */
 
-button:hover {
-
-    background: #6c3483;
+button {
+    display: block;
+    margin: 18px auto 0;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 7px;
+    background-color: #8e44ad;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
 }
 
+button:hover {
+    background-color: #6c3483;
+}
 
 /* ================= VALEURS ================= */
 
 .values {
-
     display: grid;
-
-    grid-template-columns:
-        repeat(5, 1fr);
-
+    grid-template-columns: repeat(5, 1fr);
     gap: 12px;
-
     margin-top: 20px;
 }
 
-
 .values > div {
-
-    background: white;
-
+    background-color: white;
     padding: 15px;
-
     border-radius: 8px;
-
     text-align: center;
-
-    box-shadow:
-        0 2px 7px
-        rgba(0,0,0,0.08);
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.08);
 }
 
-
 .values strong {
-
     display: block;
-
     color: #555;
-
     margin-bottom: 8px;
 }
 
-
 .values span {
-
     font-size: 20px;
-
     font-weight: bold;
 }
 
-
 .average {
-
     border: 2px solid #2471a3;
 }
 
-
 .average span {
-
     color: #2471a3;
 }
-
 
 /* ================= EQUATIONS ================= */
 
 .equations {
-
     margin-top: 25px;
-
     padding: 25px;
-
-    background: #17202a;
-
+    background-color: #17202a;
     color: white;
-
     border-radius: 10px;
-
     text-align: center;
 }
 
-
 .equations h2 {
-
     margin-top: 0;
 }
 
-
 .equations p {
-
     font-size: 18px;
 }
 
-
 .important {
-
     color: #5dade2;
-
     font-size: 22px !important;
 }
-
 
 /* ================= MOBILE ================= */
 
 @media (max-width: 900px) {
 
     .figures {
-
         grid-template-columns: 1fr;
     }
 
-
     .values {
-
-        grid-template-columns:
-            repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
 }
-
 
 @media (max-width: 600px) {
 
     .values {
-
         grid-template-columns: 1fr;
     }
 
     #thetaSlider {
-
         width: 100%;
+    }
+
+    header h1 {
+        font-size: 22px;
     }
 }
