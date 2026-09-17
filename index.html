@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polarisation circulaire — Analyseur</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Polarisation circulaire</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -12,16 +17,24 @@
 <div class="container">
 
     <header>
-        <h1>Polarisation circulaire</h1>
+        <h1>Polarisation circulaire et analyseur</h1>
+
         <p>
-            Visualisation du champ électrique incident et de sa projection
-            sur l'axe d'un analyseur linéaire.
+            Visualisation du champ électrique incident,
+            de sa projection sur l'analyseur et de
+            l'intensité en fonction de θ.
         </p>
     </header>
 
+
     <main>
 
-        <section class="card graph-card">
+        <!-- ================================================= -->
+        <!-- GRAPHE -->
+        <!-- ================================================= -->
+
+        <section class="card">
+
             <h2>Intensité après l'analyseur</h2>
 
             <div class="canvas-container">
@@ -29,8 +42,12 @@
             </div>
 
             <div class="slider-container">
+
                 <label for="thetaSlider">
-                    θ = <span id="thetaValue">0</span>°
+                    Angle du polariseur :
+                    <strong>
+                        θ = <span id="thetaValue">0</span>°
+                    </strong>
                 </label>
 
                 <input
@@ -41,15 +58,21 @@
                     step="1"
                     value="0"
                 >
+
             </div>
+
         </section>
 
 
-        <section class="card visualization-card">
+        <!-- ================================================= -->
+        <!-- CADRAN OXY -->
+        <!-- ================================================= -->
 
-            <h2>Champ électrique</h2>
+        <section class="card">
 
-            <div class="canvas-container circular-container">
+            <h2>Champ électrique incident</h2>
+
+            <div class="canvas-container">
                 <canvas id="vectorCanvas"></canvas>
             </div>
 
@@ -62,7 +85,7 @@
 
                 <div>
                     <span class="legend-color purple"></span>
-                    Axe de l'analyseur
+                    Axe du polariseur
                 </div>
 
                 <div>
@@ -74,6 +97,10 @@
 
         </section>
 
+
+        <!-- ================================================= -->
+        <!-- VALEURS -->
+        <!-- ================================================= -->
 
         <section class="values">
 
@@ -106,15 +133,28 @@
 
     </main>
 
+
     <footer>
+
         <p>
             Polarisation circulaire :
-            E<sub>x</sub> = E<sub>0</sub> cos(ωt),
+        </p>
+
+        <p>
+            E<sub>x</sub> = E<sub>0</sub> cos(ωt)
+            &nbsp;&nbsp;&nbsp;
             E<sub>y</sub> = E<sub>0</sub> sin(ωt)
         </p>
+
+        <p>
+            Intensité moyenne :
+            I(θ) = E<sub>0</sub><sup>2</sup>/2
+        </p>
+
     </footer>
 
 </div>
+
 
 <script src="script.js"></script>
 
