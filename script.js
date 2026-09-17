@@ -255,21 +255,14 @@ function drawPolarisation(thetaDeg) {
     );
 
     ctx.stroke();
-
-
+    
     // --------------------------------------------------------
     // CHAMP INCIDENT
     // --------------------------------------------------------
-
-    const Ex =
-        E0 * Math.cos(time);
-
-    const Ey =
-        E0 * Math.sin(time);
-
-
+    const Ex = E0 * Math.cos(time);
+    const Ey = E0 * Math.sin(time);
+    
     drawArrow(
-        ctx,
         cx,
         cy,
         X(Ex),
@@ -277,13 +270,10 @@ function drawPolarisation(thetaDeg) {
         "#e74c3c",
         4
     );
-
-
+    
     // Point rouge
     ctx.fillStyle = "#e74c3c";
-
     ctx.beginPath();
-
     ctx.arc(
         X(Ex),
         Y(Ey),
@@ -291,9 +281,7 @@ function drawPolarisation(thetaDeg) {
         0,
         2 * Math.PI
     );
-
     ctx.fill();
-
 
     // --------------------------------------------------------
     // PROJECTION
