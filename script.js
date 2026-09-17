@@ -286,20 +286,11 @@ function drawPolarisation(thetaDeg) {
     // --------------------------------------------------------
     // PROJECTION
     // --------------------------------------------------------
-
-    const Eout =
-        Ex * ux +
-        Ey * uy;
-
-    const ExProj =
-        Eout * ux;
-
-    const EyProj =
-        Eout * uy;
-
-
+    const Eout = Ex * ux + Ey * uy;
+    const ExProj = Eout * ux;
+    const EyProj = Eout * uy;
+    
     drawArrow(
-        ctx,
         cx,
         cy,
         X(ExProj),
@@ -307,8 +298,7 @@ function drawPolarisation(thetaDeg) {
         "#27ae60",
         5
     );
-
-
+    
     // --------------------------------------------------------
     // TEXTES
     // --------------------------------------------------------
