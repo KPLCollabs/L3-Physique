@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polarisation circulaire — Analyseur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>Polarisation circulaire</h1>
+        <p>
+            Visualisation du champ électrique incident et de sa projection
+            sur l'axe d'un analyseur linéaire.
+        </p>
+    </header>
+
+    <main>
+
+        <section class="card graph-card">
+            <h2>Intensité après l'analyseur</h2>
+
+            <div class="canvas-container">
+                <canvas id="intensityCanvas"></canvas>
+            </div>
+
+            <div class="slider-container">
+                <label for="thetaSlider">
+                    θ = <span id="thetaValue">0</span>°
+                </label>
+
+                <input
+                    type="range"
+                    id="thetaSlider"
+                    min="0"
+                    max="360"
+                    step="1"
+                    value="0"
+                >
+            </div>
+        </section>
+
+
+        <section class="card visualization-card">
+
+            <h2>Champ électrique</h2>
+
+            <div class="canvas-container circular-container">
+                <canvas id="vectorCanvas"></canvas>
+            </div>
+
+            <div class="legend">
+
+                <div>
+                    <span class="legend-color red"></span>
+                    Champ incident
+                </div>
+
+                <div>
+                    <span class="legend-color purple"></span>
+                    Axe de l'analyseur
+                </div>
+
+                <div>
+                    <span class="legend-color green"></span>
+                    Projection
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="values">
+
+            <div class="value-card">
+                <span>θ</span>
+                <strong id="thetaDisplay">0°</strong>
+            </div>
+
+            <div class="value-card">
+                <span>E<sub>x</sub></span>
+                <strong id="exDisplay">1.00</strong>
+            </div>
+
+            <div class="value-card">
+                <span>E<sub>y</sub></span>
+                <strong id="eyDisplay">0.00</strong>
+            </div>
+
+            <div class="value-card">
+                <span>E<sub>sortie</sub></span>
+                <strong id="esortieDisplay">1.00</strong>
+            </div>
+
+            <div class="value-card">
+                <span>I</span>
+                <strong id="intensityDisplay">1.00</strong>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>
+            Polarisation circulaire :
+            E<sub>x</sub> = E<sub>0</sub> cos(ωt),
+            E<sub>y</sub> = E<sub>0</sub> sin(ωt)
+        </p>
+    </footer>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
