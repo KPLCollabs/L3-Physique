@@ -1,6 +1,6 @@
-/* ============================================================
+/* =========================================================
    PARAMÈTRES
-   ============================================================ */
+   ========================================================= */
 
 const E0 = 1.0;
 
@@ -9,11 +9,11 @@ let time = 0;
 let playing = true;
 
 
-/* ============================================================
+/* =========================================================
    ÉLÉMENTS HTML
-   ============================================================ */
+   ========================================================= */
 
-const slider =
+const thetaSlider =
     document.getElementById("thetaSlider");
 
 const thetaValue =
@@ -38,35 +38,46 @@ const playButton =
     document.getElementById("playButton");
 
 
-/* ============================================================
-   CANVAS
-   ============================================================ */
+/* =========================================================
+   CANVAS OXY
+   ========================================================= */
 
-const canvas =
+const polarisationCanvas =
     document.getElementById(
         "polarisationCanvas"
     );
 
 const ctx =
-    canvas.getContext("2d");
+    polarisationCanvas.getContext("2d");
 
 
-/* ============================================================
-   PARAMÈTRES DU CADRAN
-   ============================================================ */
+/* =========================================================
+   CANVAS GRAPHE
+   ========================================================= */
 
-const cx =
-    canvas.width / 2;
+const intensityCanvas =
+    document.getElementById(
+        "intensityCanvas"
+    );
 
-const cy =
-    canvas.height / 2;
+const graph =
+    intensityCanvas.getContext("2d");
+
+
+/* =========================================================
+   DIMENSIONS CADRAN
+   ========================================================= */
+
+const cx = 250;
+
+const cy = 250;
 
 const scale = 170;
 
 
-/* ============================================================
-   CONVERSION COORDONNÉES
-   ============================================================ */
+/* =========================================================
+   COORDONNÉES
+   ========================================================= */
 
 function X(x) {
 
@@ -80,11 +91,12 @@ function Y(y) {
 }
 
 
-/* ============================================================
-   DESSIN D'UNE FLÈCHE
-   ============================================================ */
+/* =========================================================
+   FLÈCHE
+   ========================================================= */
 
 function drawArrow(
+    ctx,
     x1,
     y1,
     x2,
@@ -93,7 +105,7 @@ function drawArrow(
     width
 ) {
 
-    const headLength = 12;
+    const head = 12;
 
     const angle =
         Math.atan2(
@@ -109,8 +121,6 @@ function drawArrow(
     ctx.lineWidth = width;
 
 
-    /* Corps */
-
     ctx.beginPath();
 
     ctx.moveTo(x1, y1);
@@ -120,29 +130,23 @@ function drawArrow(
     ctx.stroke();
 
 
-    /* Pointe */
-
     ctx.beginPath();
 
     ctx.moveTo(x2, y2);
 
     ctx.lineTo(
-        x2 -
-        headLength *
+        x2 - head *
         Math.cos(angle - Math.PI / 6),
 
-        y2 -
-        headLength *
+        y2 - head *
         Math.sin(angle - Math.PI / 6)
     );
 
     ctx.lineTo(
-        x2 -
-        headLength *
+        x2 - head *
         Math.cos(angle + Math.PI / 6),
 
-        y2 -
-        headLength *
+        y2 - head *
         Math.sin(angle + Math.PI / 6)
     );
 
@@ -152,23 +156,23 @@ function drawArrow(
 }
 
 
-/* ============================================================
-   DESSIN DU CADRAN OXY
-   ============================================================ */
+/* =========================================================
+   CADRAN OXY
+   ========================================================= */
 
 function drawPolarisation(thetaDeg) {
 
     ctx.clearRect(
         0,
         0,
-        canvas.width,
-        canvas.height
+        500,
+        500
     );
 
 
-    /* --------------------------------------------------------
+    /* -----------------------------------------------------
        GRILLE
-       -------------------------------------------------------- */
+       ----------------------------------------------------- */
 
     ctx.strokeStyle = "#eeeeee";
 
@@ -179,8 +183,6 @@ function drawPolarisation(thetaDeg) {
         i <= 1;
         i += 0.5
     ) {
-
-        /* vertical */
 
         ctx.beginPath();
 
@@ -196,8 +198,6 @@ function drawPolarisation(thetaDeg) {
 
         ctx.stroke();
 
-
-        /* horizontal */
 
         ctx.beginPath();
 
@@ -215,13 +215,14 @@ function drawPolarisation(thetaDeg) {
     }
 
 
-    /* --------------------------------------------------------
-       AXES X Y
-       -------------------------------------------------------- */
+    /* -----------------------------------------------------
+       AXES
+       ----------------------------------------------------- */
 
     ctx.strokeStyle = "#222";
 
     ctx.lineWidth = 1.5;
+
 
     ctx.beginPath();
 
@@ -253,9 +254,9 @@ function drawPolarisation(thetaDeg) {
     ctx.stroke();
 
 
-    /* --------------------------------------------------------
-       CERCLE DE POLARISATION
-       -------------------------------------------------------- */
+    /* -----------------------------------------------------
+       CERCLE
+       ----------------------------------------------------- */
 
     ctx.strokeStyle = "#999";
 
@@ -278,14 +279,12 @@ function drawPolarisation(thetaDeg) {
     ctx.setLineDash([]);
 
 
-    /* --------------------------------------------------------
-       ANGLE DU POLARISEUR
-       -------------------------------------------------------- */
+    /* -----------------------------------------------------
+       ANGLE POLARISEUR
+       ----------------------------------------------------- */
 
     const theta =
-        thetaDeg *
-        Math.PI / 180;
-
+        thetaDeg * Math.PI / 180;
 
     const ux =
         Math.cos(theta);
@@ -294,9 +293,9 @@ function drawPolarisation(thetaDeg) {
         Math.sin(theta);
 
 
-    /* --------------------------------------------------------
-       AXE DU POLARISEUR
-       -------------------------------------------------------- */
+    /* -----------------------------------------------------
+       AXE POLARISEUR
+       ----------------------------------------------------- */
 
     ctx.strokeStyle = "#8e44ad";
 
@@ -317,9 +316,9 @@ function drawPolarisation(thetaDeg) {
     ctx.stroke();
 
 
-    /* --------------------------------------------------------
+    /* -----------------------------------------------------
        CHAMP INCIDENT
-       -------------------------------------------------------- */
+       ----------------------------------------------------- */
 
     const Ex =
         E0 * Math.cos(time);
@@ -329,6 +328,7 @@ function drawPolarisation(thetaDeg) {
 
 
     drawArrow(
+        ctx,
         cx,
         cy,
         X(Ex),
@@ -338,9 +338,36 @@ function drawPolarisation(thetaDeg) {
     );
 
 
-    /* --------------------------------------------------------
+    /* -----------------------------------------------------
+       PROJECTION
+       ----------------------------------------------------- */
+
+    const Eproj =
+        Ex * ux +
+        Ey * uy;
+
+
+    const ExProj =
+        Eproj * ux;
+
+    const EyProj =
+        Eproj * uy;
+
+
+    drawArrow(
+        ctx,
+        cx,
+        cy,
+        X(ExProj),
+        Y(EyProj),
+        "#27ae60",
+        5
+    );
+
+
+    /* -----------------------------------------------------
        POINT DU CHAMP
-       -------------------------------------------------------- */
+       ----------------------------------------------------- */
 
     ctx.fillStyle = "#e74c3c";
 
@@ -357,47 +384,19 @@ function drawPolarisation(thetaDeg) {
     ctx.fill();
 
 
-    /* --------------------------------------------------------
-       PROJECTION
-       -------------------------------------------------------- */
-
-    const Eproj =
-        Ex * ux +
-        Ey * uy;
-
-
-    const ExProj =
-        Eproj * ux;
-
-    const EyProj =
-        Eproj * uy;
-
-
-    drawArrow(
-        cx,
-        cy,
-        X(ExProj),
-        Y(EyProj),
-        "#27ae60",
-        5
-    );
-
-
-    /* --------------------------------------------------------
-       TEXTES
-       -------------------------------------------------------- */
+    /* -----------------------------------------------------
+       TEXTE
+       ----------------------------------------------------- */
 
     ctx.fillStyle = "#222";
 
     ctx.font = "16px Arial";
-
 
     ctx.fillText(
         "x",
         X(1.15),
         Y(0) - 8
     );
-
 
     ctx.fillText(
         "y",
@@ -407,7 +406,6 @@ function drawPolarisation(thetaDeg) {
 
 
     ctx.font = "14px Arial";
-
 
     ctx.fillText(
         "θ = " +
@@ -419,201 +417,366 @@ function drawPolarisation(thetaDeg) {
 
 
     ctx.fillText(
-        "E sortie = " +
-        Eproj.toFixed(3),
+        "Rouge : E incident",
         15,
-        48
+        45
+    );
+
+
+    ctx.fillText(
+        "Vert : E sortie",
+        15,
+        65
+    );
+
+
+    ctx.fillStyle = "#8e44ad";
+
+    ctx.fillText(
+        "Violet : axe analyseur",
+        15,
+        85
     );
 }
 
 
-/* ============================================================
-   GRAPHE INTENSITÉ
-   ============================================================ */
+/* =========================================================
+   GRAPHE
+   ========================================================= */
 
-const thetaArray = [];
+function drawGraph(thetaDeg, Iinst) {
 
-const intensityAverage = [];
+    const w =
+        intensityCanvas.width;
 
-const intensityInstant = [];
+    const h =
+        intensityCanvas.height;
 
 
-for (
-    let i = 0;
-    i <= 360;
-    i++
-) {
-
-    thetaArray.push(i);
-
-    intensityAverage.push(
-        E0 * E0 / 2
+    graph.clearRect(
+        0,
+        0,
+        w,
+        h
     );
 
-    intensityInstant.push(null);
-}
+
+    /* Marges */
+
+    const left = 70;
+
+    const right = 25;
+
+    const top = 35;
+
+    const bottom = 60;
 
 
-/* ============================================================
-   CHART.JS
-   ============================================================ */
+    const plotWidth =
+        w - left - right;
 
-const chart =
-    new Chart(
-
-        document.getElementById(
-            "intensityChart"
-        ),
-
-        {
-
-            type: "line",
-
-            data: {
-
-                labels:
-                    thetaArray,
-
-                datasets: [
-
-                    /* ----------------------------------------
-                       MOYENNE
-                       ---------------------------------------- */
-
-                    {
-
-                        label:
-                            "Intensité moyenne ⟨I(θ)⟩ₜ",
-
-                        data:
-                            intensityAverage,
-
-                        borderColor:
-                            "#2471a3",
-
-                        backgroundColor:
-                            "rgba(36,113,163,0.1)",
-
-                        borderWidth: 3,
-
-                        pointRadius: 0,
-
-                        tension: 0
-
-                    },
+    const plotHeight =
+        h - top - bottom;
 
 
-                    /* ----------------------------------------
-                       POINT INSTANTANÉ
-                       ---------------------------------------- */
+    /* -----------------------------------------------------
+       COORDONNÉES GRAPHE
+       ----------------------------------------------------- */
 
-                    {
+    function graphX(theta) {
 
-                        label:
-                            "Intensité instantanée I(t,θ)",
-
-                        data:
-                            intensityInstant,
-
-                        borderColor:
-                            "#e74c3c",
-
-                        backgroundColor:
-                            "#e74c3c",
-
-                        borderWidth: 0,
-
-                        pointRadius: 7,
-
-                        showLine: false
-
-                    }
-
-                ]
-            },
+        return left +
+            theta / 360 *
+            plotWidth;
+    }
 
 
-            options: {
+    function graphY(I) {
 
-                responsive: true,
-
-                maintainAspectRatio: false,
-
-                animation: false,
-
-
-                scales: {
-
-                    x: {
-
-                        title: {
-
-                            display: true,
-
-                            text:
-                                "θ : angle du polariseur (°)"
-
-                        },
-
-                        min: 0,
-
-                        max: 360
-
-                    },
+        return top +
+            (1.1 - I) / 1.1 *
+            plotHeight;
+    }
 
 
-                    y: {
+    /* -----------------------------------------------------
+       FOND
+       ----------------------------------------------------- */
 
-                        title: {
+    graph.fillStyle = "#ffffff";
 
-                            display: true,
-
-                            text:
-                                "Intensité"
-
-                        },
-
-                        min: 0,
-
-                        max: 1.1
-
-                    }
-
-                },
+    graph.fillRect(
+        0,
+        0,
+        w,
+        h
+    );
 
 
-                plugins: {
+    /* -----------------------------------------------------
+       GRILLE HORIZONTALE
+       ----------------------------------------------------- */
 
-                    legend: {
+    graph.strokeStyle = "#dddddd";
 
-                        display: true
+    graph.lineWidth = 1;
 
-                    }
+    for (
+        let I = 0;
+        I <= 1;
+        I += 0.25
+    ) {
 
-                }
+        const y =
+            graphY(I);
 
-            }
+        graph.beginPath();
+
+        graph.moveTo(
+            left,
+            y
+        );
+
+        graph.lineTo(
+            w - right,
+            y
+        );
+
+        graph.stroke();
+
+
+        graph.fillStyle = "#555";
+
+        graph.font = "12px Arial";
+
+        graph.fillText(
+            I.toFixed(2),
+            20,
+            y + 4
+        );
+    }
+
+
+    /* -----------------------------------------------------
+       AXES
+       ----------------------------------------------------- */
+
+    graph.strokeStyle = "#222";
+
+    graph.lineWidth = 2;
+
+
+    graph.beginPath();
+
+    graph.moveTo(
+        left,
+        top
+    );
+
+    graph.lineTo(
+        left,
+        h - bottom
+    );
+
+    graph.lineTo(
+        w - right,
+        h - bottom
+    );
+
+    graph.stroke();
+
+
+    /* -----------------------------------------------------
+       AXE THETA
+       ----------------------------------------------------- */
+
+    graph.fillStyle = "#222";
+
+    graph.font = "13px Arial";
+
+
+    for (
+        let theta = 0;
+        theta <= 360;
+        theta += 60
+    ) {
+
+        const x =
+            graphX(theta);
+
+        graph.fillText(
+            theta + "°",
+            x - 10,
+            h - 35
+        );
+    }
+
+
+    /* -----------------------------------------------------
+       TITRES AXES
+       ----------------------------------------------------- */
+
+    graph.font = "15px Arial";
+
+
+    graph.fillText(
+        "θ (angle du polariseur)",
+        w / 2 - 70,
+        h - 10
+    );
+
+
+    graph.save();
+
+    graph.translate(
+        15,
+        h / 2
+    );
+
+    graph.rotate(-Math.PI / 2);
+
+    graph.fillText(
+        "Intensité",
+        0,
+        0
+    );
+
+    graph.restore();
+
+
+    /* -----------------------------------------------------
+       COURBE MOYENNE
+       ----------------------------------------------------- */
+
+    const Iavg =
+        E0 * E0 / 2;
+
+
+    graph.strokeStyle = "#2471a3";
+
+    graph.lineWidth = 3;
+
+
+    graph.beginPath();
+
+
+    for (
+        let theta = 0;
+        theta <= 360;
+        theta++
+    ) {
+
+        const x =
+            graphX(theta);
+
+        const y =
+            graphY(Iavg);
+
+
+        if (theta === 0) {
+
+            graph.moveTo(x, y);
+
+        } else {
+
+            graph.lineTo(x, y);
         }
+    }
+
+
+    graph.stroke();
+
+
+    /* -----------------------------------------------------
+       POINT INSTANTANÉ
+       ----------------------------------------------------- */
+
+    const px =
+        graphX(thetaDeg);
+
+    const py =
+        graphY(Iinst);
+
+
+    graph.fillStyle = "#e74c3c";
+
+    graph.beginPath();
+
+    graph.arc(
+        px,
+        py,
+        7,
+        0,
+        2 * Math.PI
+    );
+
+    graph.fill();
+
+
+    /* -----------------------------------------------------
+       LÉGENDE
+       ----------------------------------------------------- */
+
+    graph.fillStyle = "#2471a3";
+
+    graph.fillRect(
+        left + 20,
+        top + 10,
+        25,
+        4
     );
 
 
-/* ============================================================
-   MISE À JOUR
-   ============================================================ */
+    graph.fillStyle = "#222";
+
+    graph.font = "13px Arial";
+
+    graph.fillText(
+        "Intensité moyenne <I(θ)>ₜ = E₀²/2",
+        left + 55,
+        top + 15
+    );
+
+
+    graph.fillStyle = "#e74c3c";
+
+    graph.beginPath();
+
+    graph.arc(
+        left + 32,
+        top + 38,
+        5,
+        0,
+        2 * Math.PI
+    );
+
+    graph.fill();
+
+
+    graph.fillStyle = "#222";
+
+    graph.fillText(
+        "I(t,θ) instantanée",
+        left + 55,
+        top + 43
+    );
+}
+
+
+/* =========================================================
+   MISE À JOUR GÉNÉRALE
+   ========================================================= */
 
 function update() {
 
     const thetaDeg =
-        Number(slider.value);
+        Number(thetaSlider.value);
 
     const theta =
-        thetaDeg *
-        Math.PI / 180;
+        thetaDeg * Math.PI / 180;
 
 
-    /* --------------------------------------------------------
-       CHAMP INCIDENT
-       -------------------------------------------------------- */
+    /* Champ circulaire */
 
     const Ex =
         E0 * Math.cos(time);
@@ -622,34 +785,26 @@ function update() {
         E0 * Math.sin(time);
 
 
-    /* --------------------------------------------------------
-       PROJECTION
-       -------------------------------------------------------- */
+    /* Projection */
 
-    const Eproj =
+    const Eout =
         Ex * Math.cos(theta) +
         Ey * Math.sin(theta);
 
 
-    /* --------------------------------------------------------
-       INTENSITÉ INSTANTANÉE
-       -------------------------------------------------------- */
+    /* Intensité */
 
     const Iinst =
-        Eproj * Eproj;
+        Eout * Eout;
 
 
-    /* --------------------------------------------------------
-       INTENSITÉ MOYENNE
-       -------------------------------------------------------- */
+    /* Intensité moyenne */
 
-    const Iaverage =
+    const Iavg =
         E0 * E0 / 2;
 
 
-    /* --------------------------------------------------------
-       AFFICHAGE
-       -------------------------------------------------------- */
+    /* Affichage */
 
     thetaValue.textContent =
         thetaDeg.toFixed(0) + "°";
@@ -664,7 +819,7 @@ function update() {
 
 
     EoutValue.textContent =
-        Eproj.toFixed(3);
+        Eout.toFixed(3);
 
 
     IValue.textContent =
@@ -672,48 +827,33 @@ function update() {
 
 
     averageValue.textContent =
-        Iaverage.toFixed(3);
+        Iavg.toFixed(3);
 
 
-    /* --------------------------------------------------------
-       POINT ROUGE
-       -------------------------------------------------------- */
-
-    chart.data.datasets[1].data =
-        thetaArray.map(
-            () => null
-        );
-
-
-    chart.data.datasets[1].data[
-        Math.round(thetaDeg)
-    ] = Iinst;
-
-
-    chart.update("none");
-
-
-    /* --------------------------------------------------------
-       CADRAN
-       -------------------------------------------------------- */
+    /* Dessins */
 
     drawPolarisation(thetaDeg);
+
+    drawGraph(
+        thetaDeg,
+        Iinst
+    );
 }
 
 
-/* ============================================================
+/* =========================================================
    CURSEUR
-   ============================================================ */
+   ========================================================= */
 
-slider.addEventListener(
+thetaSlider.addEventListener(
     "input",
     update
 );
 
 
-/* ============================================================
-   BOUTON PLAY / PAUSE
-   ============================================================ */
+/* =========================================================
+   PLAY / PAUSE
+   ========================================================= */
 
 playButton.addEventListener(
     "click",
@@ -731,16 +871,15 @@ playButton.addEventListener(
 
             playButton.textContent =
                 "▶ Animation";
-
         }
 
     }
 );
 
 
-/* ============================================================
+/* =========================================================
    ANIMATION
-   ============================================================ */
+   ========================================================= */
 
 function animate() {
 
@@ -758,9 +897,9 @@ function animate() {
 }
 
 
-/* ============================================================
-   INITIALISATION
-   ============================================================ */
+/* =========================================================
+   DÉMARRAGE
+   ========================================================= */
 
 update();
 
