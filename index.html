@@ -5,14 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Polarisation circulaire et analyseur</title>
+    <title>Polarisation circulaire</title>
 
     <link rel="stylesheet" href="style.css">
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- MathJax -->
     <script>
         window.MathJax = {
             tex: {
@@ -30,26 +26,19 @@
 
 <header>
     <h1>Polarisation circulaire et analyseur</h1>
-
-    <p>
-        Simulation interactive du champ électrique
-    </p>
+    <p>Simulation interactive</p>
 </header>
 
 
-<main class="container">
+<main>
 
 
-    <!-- =====================================================
-         FIGURES
-         ===================================================== -->
+    <!-- ================= FIGURES ================= -->
 
     <section class="figures">
 
 
-        <!-- =================================================
-             CADRAN OXY
-             ================================================= -->
+        <!-- CADRAN OXY -->
 
         <div class="card">
 
@@ -64,43 +53,39 @@
         </div>
 
 
-        <!-- =================================================
-             GRAPHE I(theta)
-             ================================================= -->
+        <!-- COURBE -->
 
         <div class="card">
 
             <h2>Intensité en fonction de \(\theta\)</h2>
 
-            <div class="chart-container">
-
-                <canvas id="intensityChart"></canvas>
-
-            </div>
+            <canvas
+                id="intensityCanvas"
+                width="700"
+                height="450">
+            </canvas>
 
         </div>
 
     </section>
 
 
-    <!-- =====================================================
-         CURSEUR
-         ===================================================== -->
+    <!-- ================= CURSEUR ================= -->
 
-    <section class="slider-card">
+    <section class="controls">
 
-        <label for="thetaSlider">
+        <label>
             Angle du polariseur :
             <span id="thetaValue">0°</span>
         </label>
 
         <input
-            type="range"
             id="thetaSlider"
+            type="range"
             min="0"
             max="360"
-            step="1"
             value="0"
+            step="1"
         >
 
         <button id="playButton">
@@ -110,117 +95,54 @@
     </section>
 
 
-    <!-- =====================================================
-         VALEURS
-         ===================================================== -->
+    <!-- ================= VALEURS ================= -->
 
     <section class="values">
 
-
-        <div class="value">
-
-            <strong>\(E_x\)</strong>
-
-            <span id="ExValue">
-                1.000
-            </span>
-
+        <div>
+            <strong>Ex</strong>
+            <span id="ExValue">1.000</span>
         </div>
 
-
-        <div class="value">
-
-            <strong>\(E_y\)</strong>
-
-            <span id="EyValue">
-                0.000
-            </span>
-
+        <div>
+            <strong>Ey</strong>
+            <span id="EyValue">0.000</span>
         </div>
 
-
-        <div class="value">
-
-            <strong>\(E_{\mathrm{sortie}}\)</strong>
-
-            <span id="EoutValue">
-                1.000
-            </span>
-
+        <div>
+            <strong>E sortie</strong>
+            <span id="EoutValue">1.000</span>
         </div>
 
-
-        <div class="value">
-
-            <strong>\(I(t,\theta)\)</strong>
-
-            <span id="IValue">
-                1.000
-            </span>
-
+        <div>
+            <strong>I instantanée</strong>
+            <span id="IValue">1.000</span>
         </div>
 
-
-        <div class="value average">
-
-            <strong>
-                \(\langle I(\theta)\rangle_t\)
-            </strong>
-
-            <span id="averageValue">
-                0.500
-            </span>
-
+        <div class="average">
+            <strong>I moyenne</strong>
+            <span id="averageValue">0.500</span>
         </div>
 
     </section>
 
 
-    <!-- =====================================================
-         ÉQUATIONS
-         ===================================================== -->
+    <!-- ================= EQUATIONS ================= -->
 
     <section class="equations">
 
-        <h2>Équations utilisées</h2>
+        <h2>Équations</h2>
 
-
-        <div class="equation">
-
+        <p>
             \[
             \vec E_{\mathrm{inc}}(t)
             =
             E_0
-            \left[
-            \cos(t)\vec u_x
-            +
-            \sin(t)\vec u_y
-            \right]
+            [\cos(t)\vec u_x+\sin(t)\vec u_y]
             \]
+        </p>
 
-        </div>
-
-
-        <div class="equation">
-
-            \[
-            E_x(t)=E_0\cos(t)
-            \]
-
-        </div>
-
-
-        <div class="equation">
-
-            \[
-            E_y(t)=E_0\sin(t)
-            \]
-
-        </div>
-
-
-        <div class="equation">
-
+        <p>
             \[
             \vec u_\theta
             =
@@ -228,56 +150,37 @@
             +
             \sin(\theta)\vec u_y
             \]
+        </p>
 
-        </div>
-
-
-        <div class="equation">
-
+        <p>
             \[
             E_{\mathrm{sortie}}
             =
             \vec E_{\mathrm{inc}}
             \cdot
             \vec u_\theta
-            \]
-
-        </div>
-
-
-        <div class="equation">
-
-            \[
-            E_{\mathrm{sortie}}
             =
             E_0\cos(t-\theta)
             \]
+        </p>
 
-        </div>
-
-
-        <div class="equation">
-
+        <p>
             \[
             I(t,\theta)
             =
             E_{\mathrm{sortie}}^2
             \]
+        </p>
 
-        </div>
-
-
-        <div class="equation important">
-
+        <p class="important">
             \[
             \boxed{
-            \left\langle I(\theta)\right\rangle_t
+            \langle I(\theta)\rangle_t
             =
             \frac{E_0^2}{2}
             }
             \]
-
-        </div>
+        </p>
 
     </section>
 
