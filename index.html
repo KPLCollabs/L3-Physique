@@ -3,157 +3,285 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Polarisation circulaire</title>
+    <title>Polarisation circulaire et analyseur</title>
 
     <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- MathJax -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']]
+            }
+        };
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
+
 
 <body>
 
-<div class="container">
+<header>
+    <h1>Polarisation circulaire et analyseur</h1>
 
-    <header>
-        <h1>Polarisation circulaire et analyseur</h1>
-
-        <p>
-            Visualisation du champ électrique incident,
-            de sa projection sur l'analyseur et de
-            l'intensité en fonction de θ.
-        </p>
-    </header>
+    <p>
+        Simulation interactive du champ électrique
+    </p>
+</header>
 
 
-    <main>
-
-        <!-- ================================================= -->
-        <!-- GRAPHE -->
-        <!-- ================================================= -->
-
-        <section class="card">
-
-            <h2>Intensité après l'analyseur</h2>
-
-            <div class="canvas-container">
-                <canvas id="intensityCanvas"></canvas>
-            </div>
-
-            <div class="slider-container">
-
-                <label for="thetaSlider">
-                    Angle du polariseur :
-                    <strong>
-                        θ = <span id="thetaValue">0</span>°
-                    </strong>
-                </label>
-
-                <input
-                    type="range"
-                    id="thetaSlider"
-                    min="0"
-                    max="360"
-                    step="1"
-                    value="0"
-                >
-
-            </div>
-
-        </section>
+<main class="container">
 
 
-        <!-- ================================================= -->
-        <!-- CADRAN OXY -->
-        <!-- ================================================= -->
+    <!-- =====================================================
+         FIGURES
+         ===================================================== -->
 
-        <section class="card">
+    <section class="figures">
 
-            <h2>Champ électrique incident</h2>
 
-            <div class="canvas-container">
-                <canvas id="vectorCanvas"></canvas>
-            </div>
+        <!-- =================================================
+             CADRAN OXY
+             ================================================= -->
 
-            <div class="legend">
+        <div class="card">
 
-                <div>
-                    <span class="legend-color red"></span>
-                    Champ incident
-                </div>
+            <h2>Champ électrique dans le plan \(Oxy\)</h2>
 
-                <div>
-                    <span class="legend-color purple"></span>
-                    Axe du polariseur
-                </div>
+            <canvas
+                id="polarisationCanvas"
+                width="500"
+                height="500">
+            </canvas>
 
-                <div>
-                    <span class="legend-color green"></span>
-                    Projection
-                </div>
+        </div>
+
+
+        <!-- =================================================
+             GRAPHE I(theta)
+             ================================================= -->
+
+        <div class="card">
+
+            <h2>Intensité en fonction de \(\theta\)</h2>
+
+            <div class="chart-container">
+
+                <canvas id="intensityChart"></canvas>
 
             </div>
 
-        </section>
+        </div>
+
+    </section>
 
 
-        <!-- ================================================= -->
-        <!-- VALEURS -->
-        <!-- ================================================= -->
+    <!-- =====================================================
+         CURSEUR
+         ===================================================== -->
 
-        <section class="values">
+    <section class="slider-card">
 
-            <div class="value-card">
-                <span>θ</span>
-                <strong id="thetaDisplay">0°</strong>
-            </div>
+        <label for="thetaSlider">
+            Angle du polariseur :
+            <span id="thetaValue">0°</span>
+        </label>
 
-            <div class="value-card">
-                <span>E<sub>x</sub></span>
-                <strong id="exDisplay">1.00</strong>
-            </div>
+        <input
+            type="range"
+            id="thetaSlider"
+            min="0"
+            max="360"
+            step="1"
+            value="0"
+        >
 
-            <div class="value-card">
-                <span>E<sub>y</sub></span>
-                <strong id="eyDisplay">0.00</strong>
-            </div>
+        <button id="playButton">
+            ⏸ Pause
+        </button>
 
-            <div class="value-card">
-                <span>E<sub>sortie</sub></span>
-                <strong id="esortieDisplay">1.00</strong>
-            </div>
-
-            <div class="value-card">
-                <span>I</span>
-                <strong id="intensityDisplay">1.00</strong>
-            </div>
-
-        </section>
-
-    </main>
+    </section>
 
 
-    <footer>
+    <!-- =====================================================
+         VALEURS
+         ===================================================== -->
 
-        <p>
-            Polarisation circulaire :
-        </p>
+    <section class="values">
 
-        <p>
-            E<sub>x</sub> = E<sub>0</sub> cos(ωt)
-            &nbsp;&nbsp;&nbsp;
-            E<sub>y</sub> = E<sub>0</sub> sin(ωt)
-        </p>
 
-        <p>
-            Intensité moyenne :
-            I(θ) = E<sub>0</sub><sup>2</sup>/2
-        </p>
+        <div class="value">
 
-    </footer>
+            <strong>\(E_x\)</strong>
 
-</div>
+            <span id="ExValue">
+                1.000
+            </span>
+
+        </div>
+
+
+        <div class="value">
+
+            <strong>\(E_y\)</strong>
+
+            <span id="EyValue">
+                0.000
+            </span>
+
+        </div>
+
+
+        <div class="value">
+
+            <strong>\(E_{\mathrm{sortie}}\)</strong>
+
+            <span id="EoutValue">
+                1.000
+            </span>
+
+        </div>
+
+
+        <div class="value">
+
+            <strong>\(I(t,\theta)\)</strong>
+
+            <span id="IValue">
+                1.000
+            </span>
+
+        </div>
+
+
+        <div class="value average">
+
+            <strong>
+                \(\langle I(\theta)\rangle_t\)
+            </strong>
+
+            <span id="averageValue">
+                0.500
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ÉQUATIONS
+         ===================================================== -->
+
+    <section class="equations">
+
+        <h2>Équations utilisées</h2>
+
+
+        <div class="equation">
+
+            \[
+            \vec E_{\mathrm{inc}}(t)
+            =
+            E_0
+            \left[
+            \cos(t)\vec u_x
+            +
+            \sin(t)\vec u_y
+            \right]
+            \]
+
+        </div>
+
+
+        <div class="equation">
+
+            \[
+            E_x(t)=E_0\cos(t)
+            \]
+
+        </div>
+
+
+        <div class="equation">
+
+            \[
+            E_y(t)=E_0\sin(t)
+            \]
+
+        </div>
+
+
+        <div class="equation">
+
+            \[
+            \vec u_\theta
+            =
+            \cos(\theta)\vec u_x
+            +
+            \sin(\theta)\vec u_y
+            \]
+
+        </div>
+
+
+        <div class="equation">
+
+            \[
+            E_{\mathrm{sortie}}
+            =
+            \vec E_{\mathrm{inc}}
+            \cdot
+            \vec u_\theta
+            \]
+
+        </div>
+
+
+        <div class="equation">
+
+            \[
+            E_{\mathrm{sortie}}
+            =
+            E_0\cos(t-\theta)
+            \]
+
+        </div>
+
+
+        <div class="equation">
+
+            \[
+            I(t,\theta)
+            =
+            E_{\mathrm{sortie}}^2
+            \]
+
+        </div>
+
+
+        <div class="equation important">
+
+            \[
+            \boxed{
+            \left\langle I(\theta)\right\rangle_t
+            =
+            \frac{E_0^2}{2}
+            }
+            \]
+
+        </div>
+
+    </section>
+
+</main>
 
 
 <script src="script.js"></script>
