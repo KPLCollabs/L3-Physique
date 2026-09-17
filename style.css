@@ -1,57 +1,46 @@
-/* ============================================================
-   STYLE GÉNÉRAL
-   ============================================================ */
-
 * {
     box-sizing: border-box;
 }
 
+
 body {
+
     margin: 0;
 
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+    font-family: Arial, sans-serif;
 
-    background: #f4f6f8;
+    background: #f3f5f7;
 
     color: #222;
 }
 
 
-/* ============================================================
-   EN-TÊTE
-   ============================================================ */
-
 header {
+
     background: #17202a;
 
     color: white;
 
-    padding: 22px;
-
     text-align: center;
+
+    padding: 22px;
 }
+
 
 header h1 {
-    margin: 0;
 
-    font-size: 28px;
+    margin: 0;
 }
 
+
 header p {
-    margin-bottom: 0;
 
     color: #d5d8dc;
 }
 
 
-/* ============================================================
-   CONTENEUR
-   ============================================================ */
+main {
 
-.container {
     max-width: 1250px;
 
     margin: 25px auto;
@@ -60,9 +49,7 @@ header p {
 }
 
 
-/* ============================================================
-   DEUX FIGURES
-   ============================================================ */
+/* ================= FIGURES ================= */
 
 .figures {
 
@@ -70,15 +57,11 @@ header p {
 
     grid-template-columns:
         1fr
-        1.15fr;
+        1.25fr;
 
     gap: 25px;
 }
 
-
-/* ============================================================
-   CARTES
-   ============================================================ */
 
 .card {
 
@@ -90,74 +73,49 @@ header p {
 
     box-shadow:
         0 3px 12px
-        rgba(0, 0, 0, 0.12);
+        rgba(0,0,0,0.12);
 }
+
 
 .card h2 {
 
     text-align: center;
 
     margin-top: 0;
-
-    margin-bottom: 15px;
 }
 
 
-/* ============================================================
-   CANVAS OXY
-   ============================================================ */
-
-#polarisationCanvas {
-
-    width: 100%;
-
-    max-width: 500px;
-
-    height: auto;
+canvas {
 
     display: block;
 
-    margin: auto;
-}
-
-
-/* ============================================================
-   GRAPHE
-   ============================================================ */
-
-.chart-container {
-
-    position: relative;
-
-    height: 430px;
-
     width: 100%;
+
+    height: auto;
 }
 
 
-/* ============================================================
-   CURSEUR
-   ============================================================ */
+/* ================= CONTROLES ================= */
 
-.slider-card {
+.controls {
 
     background: white;
 
-    border-radius: 12px;
+    margin-top: 25px;
 
     padding: 20px;
 
-    margin-top: 25px;
+    border-radius: 12px;
+
+    text-align: center;
 
     box-shadow:
         0 3px 12px
-        rgba(0, 0, 0, 0.12);
-
-    text-align: center;
+        rgba(0,0,0,0.12);
 }
 
 
-.slider-card label {
+.controls label {
 
     display: block;
 
@@ -172,20 +130,16 @@ header p {
 #thetaValue {
 
     color: #8e44ad;
-
-    font-size: 22px;
 }
 
 
 #thetaSlider {
 
     width: 80%;
-
-    cursor: pointer;
 }
 
 
-#playButton {
+button {
 
     display: block;
 
@@ -207,15 +161,13 @@ header p {
 }
 
 
-#playButton:hover {
+button:hover {
 
     background: #6c3483;
 }
 
 
-/* ============================================================
-   VALEURS
-   ============================================================ */
+/* ================= VALEURS ================= */
 
 .values {
 
@@ -230,7 +182,7 @@ header p {
 }
 
 
-.value {
+.values > div {
 
     background: white;
 
@@ -242,15 +194,13 @@ header p {
 
     box-shadow:
         0 2px 7px
-        rgba(0, 0, 0, 0.08);
+        rgba(0,0,0,0.08);
 }
 
 
-.value strong {
+.values strong {
 
     display: block;
-
-    font-size: 14px;
 
     color: #555;
 
@@ -258,7 +208,7 @@ header p {
 }
 
 
-.value span {
+.values span {
 
     font-size: 20px;
 
@@ -266,73 +216,57 @@ header p {
 }
 
 
-/* Intensité moyenne */
-
-.value.average {
-
-    background: #eaf2f8;
+.average {
 
     border: 2px solid #2471a3;
 }
 
 
-.value.average span {
+.average span {
 
     color: #2471a3;
 }
 
 
-/* ============================================================
-   ÉQUATIONS
-   ============================================================ */
+/* ================= EQUATIONS ================= */
 
 .equations {
 
     margin-top: 25px;
 
+    padding: 25px;
+
     background: #17202a;
 
     color: white;
 
-    padding: 25px;
-
     border-radius: 10px;
+
+    text-align: center;
 }
 
 
 .equations h2 {
 
-    text-align: center;
-
     margin-top: 0;
-
-    margin-bottom: 20px;
 }
 
 
-.equation {
-
-    text-align: center;
+.equations p {
 
     font-size: 18px;
-
-    margin: 12px;
 }
 
 
-.equation.important {
-
-    font-size: 21px;
+.important {
 
     color: #5dade2;
 
-    margin-top: 20px;
+    font-size: 22px !important;
 }
 
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+/* ================= MOBILE ================= */
 
 @media (max-width: 900px) {
 
@@ -352,27 +286,13 @@ header p {
 
 @media (max-width: 600px) {
 
-    .container {
-
-        padding: 0 10px;
-    }
-
-
     .values {
 
         grid-template-columns: 1fr;
     }
 
-
     #thetaSlider {
 
         width: 100%;
     }
-
-
-    .equation {
-
-        font-size: 15px;
-    }
-
 }
