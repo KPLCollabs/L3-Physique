@@ -4,15 +4,15 @@
 
 const E0 = 1.0;
 
-// Temps de la polarisation circulaire
+// Temps de rotation du champ incident
 let t = 0;
 
-// Angle de l'analyseur
+// Angle du polariseur
 let thetaDeg = 0;
 
 
 // ============================================================
-// ÉLÉMENTS HTML
+// ELEMENTS HTML
 // ============================================================
 
 const intensityCanvas =
@@ -44,79 +44,130 @@ const intensityDisplay =
 
 
 // ============================================================
-// CONTEXTES CANVAS
+// CONTEXTES
 // ============================================================
 
-const ctxI = intensityCanvas.getContext("2d");
-const ctxV = vectorCanvas.getContext("2d");
+const ctxI =
+    intensityCanvas.getContext("2d");
+
+const ctxV =
+    vectorCanvas.getContext("2d");
 
 
 // ============================================================
-// REDIMENSIONNEMENT DES CANVAS
+// REDIMENSIONNEMENT
 // ============================================================
 
 function resizeCanvas(canvas, ctx) {
 
-    const rect = canvas.getBoundingClientRect();
+    const rect =
+        canvas.getBoundingClientRect();
 
-    const dpr = window.devicePixelRatio || 1;
+    const dpr =
+        window.devicePixelRatio || 1;
 
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
+    canvas.width =
+        rect.width * dpr;
 
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    canvas.height =
+        rect.height * dpr;
+
+    ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
 }
+
 
 function resizeAll() {
-    resizeCanvas(intensityCanvas, ctxI);
-    resizeCanvas(vectorCanvas, ctxV);
+
+    resizeCanvas(
+        intensityCanvas,
+        ctxI
+    );
+
+    resizeCanvas(
+        vectorCanvas,
+        ctxV
+    );
 }
 
-window.addEventListener("resize", resizeAll);
+
+window.addEventListener(
+    "resize",
+    resizeAll
+);
 
 resizeAll();
 
 
 // ============================================================
-// FONCTION INTENSITÉ
+// INTENSITÉ MOYENNE
+// ============================================================
+//
+// Pour une polarisation circulaire :
+//
+// Ex = E0 cos(wt)
+// Ey = E0 sin(wt)
+//
+// E_sortie = Ex cos(theta) + Ey sin(theta)
+//
+// La moyenne temporelle donne :
+//
+// <I(theta)> = E0² / 2
+//
 // ============================================================
 
-function intensity(theta, alpha) {
+function intensity(theta) {
 
-    const Ex = E0 * Math.cos(alpha);
-    const Ey = E0 * Math.sin(alpha);
-
-    const Eproj =
-        Ex * Math.cos(theta) +
-        Ey * Math.sin(theta);
-
-    return Eproj * Eproj;
+    return E0 * E0 / 2;
 }
 
 
 // ============================================================
-// DESSIN DU GRAPHE I(theta)
+// GRAPHE I(theta)
 // ============================================================
 
 function drawIntensityGraph() {
 
-    const width = intensityCanvas.clientWidth;
-    const height = intensityCanvas.clientHeight;
+    const width =
+        intensityCanvas.clientWidth;
 
-    ctxI.clearRect(0, 0, width, height);
+    const height =
+        intensityCanvas.clientHeight;
+
+
+    ctxI.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
 
     const margin = {
+
         left: 55,
         right: 20,
         top: 20,
         bottom: 45
     };
 
+
     const graphWidth =
-        width - margin.left - margin.right;
+        width
+        - margin.left
+        - margin.right;
+
 
     const graphHeight =
-        height - margin.top - margin.bottom;
+        height
+        - margin.top
+        - margin.bottom;
 
 
     // --------------------------------------------------------
@@ -124,15 +175,72 @@ function drawIntensityGraph() {
     // --------------------------------------------------------
 
     ctxI.fillStyle = "#ffffff";
-    ctxI.fillRect(0, 0, width, height);
+
+    ctxI.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    // --------------------------------------------------------
+    // Grille
+    // --------------------------------------------------------
+
+    ctxI.strokeStyle =
+        "#e5e7eb";
+
+    ctxI.lineWidth = 1;
+
+
+    for (let i = 0; i <= 6; i++) {
+
+        const x =
+            margin.left
+            + graphWidth * i / 6;
+
+
+        ctxI.beginPath();
+
+        ctxI.moveTo(
+            x,
+            margin.top
+        );
+
+        ctxI.lineTo(
+            x,
+            margin.top + graphHeight
+        );
+
+        ctxI.stroke();
+
+
+        ctxI.fillStyle =
+            "#6b7280";
+
+        ctxI.font =
+            "12px Arial";
+
+        ctxI.textAlign =
+            "center";
+
+
+        ctxI.fillText(
+            `${i * 60}°`,
+            x,
+            height - 18
+        );
+    }
 
 
     // --------------------------------------------------------
     // Axes
     // --------------------------------------------------------
 
-    ctxI.strokeStyle = "#9ca3af";
-    ctxI.lineWidth = 1;
+    ctxI.strokeStyle =
+        "#9ca3af";
+
 
     ctxI.beginPath();
 
@@ -155,122 +263,107 @@ function drawIntensityGraph() {
 
 
     // --------------------------------------------------------
-    // Grille
+    // INTENSITÉ MOYENNE
     // --------------------------------------------------------
 
-    ctxI.strokeStyle = "#e5e7eb";
-
-    for (let i = 0; i <= 6; i++) {
-
-        const x =
-            margin.left +
-            graphWidth * i / 6;
-
-        ctxI.beginPath();
-
-        ctxI.moveTo(x, margin.top);
-        ctxI.lineTo(
-            x,
-            margin.top + graphHeight
-        );
-
-        ctxI.stroke();
-
-        ctxI.fillStyle = "#6b7280";
-        ctxI.font = "12px Arial";
-        ctxI.textAlign = "center";
-
-        ctxI.fillText(
-            `${i * 60}°`,
-            x,
-            height - 18
-        );
-    }
+    const Imean =
+        E0 * E0 / 2;
 
 
-    // --------------------------------------------------------
-    // Courbe
-    // --------------------------------------------------------
+    const y =
+        margin.top
+        + graphHeight
+        - Imean * graphHeight;
 
-    ctxI.strokeStyle = "#2563eb";
-    ctxI.lineWidth = 2.5;
+
+    ctxI.strokeStyle =
+        "#2563eb";
+
+    ctxI.lineWidth = 3;
+
 
     ctxI.beginPath();
 
-    for (let i = 0; i <= 500; i++) {
+    ctxI.moveTo(
+        margin.left,
+        y
+    );
 
-        const theta =
-            2 * Math.PI * i / 500;
-
-        const I =
-            intensity(theta, t);
-
-        const x =
-            margin.left +
-            theta / (2 * Math.PI) * graphWidth;
-
-        const y =
-            margin.top +
-            graphHeight -
-            I * graphHeight;
-
-        if (i === 0) {
-            ctxI.moveTo(x, y);
-        } else {
-            ctxI.lineTo(x, y);
-        }
-    }
+    ctxI.lineTo(
+        margin.left + graphWidth,
+        y
+    );
 
     ctxI.stroke();
 
 
     // --------------------------------------------------------
-    // Point correspondant à theta
+    // POINT MOBILE
     // --------------------------------------------------------
 
     const theta =
         thetaDeg * Math.PI / 180;
 
-    const I =
-        intensity(theta, t);
 
     const x =
-        margin.left +
-        theta / (2 * Math.PI) * graphWidth;
+        margin.left
+        + theta / (2 * Math.PI)
+        * graphWidth;
 
-    const y =
-        margin.top +
-        graphHeight -
-        I * graphHeight;
 
-    ctxI.fillStyle = "#ef4444";
+    ctxI.fillStyle =
+        "#ef4444";
+
 
     ctxI.beginPath();
 
-    ctxI.arc(x, y, 7, 0, 2 * Math.PI);
+    ctxI.arc(
+        x,
+        y,
+        7,
+        0,
+        2 * Math.PI
+    );
 
     ctxI.fill();
 
 
     // --------------------------------------------------------
-    // Labels
+    // LABEL X
     // --------------------------------------------------------
 
-    ctxI.fillStyle = "#374151";
-    ctxI.font = "14px Arial";
+    ctxI.fillStyle =
+        "#374151";
 
-    ctxI.textAlign = "center";
+    ctxI.font =
+        "14px Arial";
+
+    ctxI.textAlign =
+        "center";
+
 
     ctxI.fillText(
-        "θ (degrés)",
+        "θ — angle du polariseur (°)",
         margin.left + graphWidth / 2,
         height - 2
     );
 
+
+    // --------------------------------------------------------
+    // LABEL Y
+    // --------------------------------------------------------
+
     ctxI.save();
 
-    ctxI.translate(15, margin.top + graphHeight / 2);
-    ctxI.rotate(-Math.PI / 2);
+    ctxI.translate(
+        15,
+        margin.top + graphHeight / 2
+    );
+
+    ctxI.rotate(
+        -Math.PI / 2
+    );
+
 
     ctxI.fillText(
         "I",
@@ -278,43 +371,59 @@ function drawIntensityGraph() {
         0
     );
 
-    ctxI.();
+
+    ctxI.restore();
 }
 
 
 // ============================================================
-// DESSIN DU CADRAN OXY
+// CADRAN OXY
 // ============================================================
 
 function drawVectorDiagram() {
 
-    const width = vectorCanvas.clientWidth;
-    const height = vectorCanvas.clientHeight;
+    const width =
+        vectorCanvas.clientWidth;
 
-    ctxV.clearRect(0, 0, width, height);
+    const height =
+        vectorCanvas.clientHeight;
 
-    const cx = width / 2;
-    const cy = height / 2;
+
+    ctxV.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    const cx =
+        width / 2;
+
+    const cy =
+        height / 2;
+
 
     const scale =
-        Math.min(width, height) * 0.36;
+        Math.min(
+            width,
+            height
+        ) * 0.35;
 
 
     // --------------------------------------------------------
-    // Fond
+    // CERCLE DE POLARISATION
     // --------------------------------------------------------
 
-    ctxV.fillStyle = "#ffffff";
-    ctxV.fillRect(0, 0, width, height);
+    ctxV.strokeStyle =
+        "#d1d5db";
 
-
-    // --------------------------------------------------------
-    // Cercle de polarisation
-    // --------------------------------------------------------
-
-    ctxV.strokeStyle = "#d1d5db";
     ctxV.lineWidth = 1;
-    ctxV.setLineDash([5, 5]);
+
+    ctxV.setLineDash(
+        [5, 5]
+    );
+
 
     ctxV.beginPath();
 
@@ -332,32 +441,51 @@ function drawVectorDiagram() {
 
 
     // --------------------------------------------------------
-    // Axes x et y
+    // AXE X
     // --------------------------------------------------------
 
-    ctxV.strokeStyle = "#374151";
+    ctxV.strokeStyle =
+        "#374151";
+
     ctxV.lineWidth = 1.5;
 
-    // x
 
     ctxV.beginPath();
 
-    ctxV.moveTo(cx - scale * 1.2, cy);
-    ctxV.lineTo(cx + scale * 1.2, cy);
+    ctxV.moveTo(
+        cx - scale * 1.2,
+        cy
+    );
+
+    ctxV.lineTo(
+        cx + scale * 1.2,
+        cy
+    );
 
     ctxV.stroke();
 
-    // y
+
+    // --------------------------------------------------------
+    // AXE Y
+    // --------------------------------------------------------
 
     ctxV.beginPath();
 
-    ctxV.moveTo(cx, cy + scale * 1.2);
-    ctxV.lineTo(cx, cy - scale * 1.2);
+    ctxV.moveTo(
+        cx,
+        cy + scale * 1.2
+    );
+
+    ctxV.lineTo(
+        cx,
+        cy - scale * 1.2
+    );
 
     ctxV.stroke();
 
 
     // Flèche x
+
     drawArrow(
         ctxV,
         cx + scale * 1.2,
@@ -367,7 +495,9 @@ function drawVectorDiagram() {
         "#374151"
     );
 
+
     // Flèche y
+
     drawArrow(
         ctxV,
         cx,
@@ -380,14 +510,19 @@ function drawVectorDiagram() {
 
     // Labels
 
-    ctxV.fillStyle = "#111827";
-    ctxV.font = "16px Arial";
+    ctxV.fillStyle =
+        "#111827";
+
+    ctxV.font =
+        "16px Arial";
+
 
     ctxV.fillText(
         "x",
         cx + scale * 1.15,
         cy + 20
     );
+
 
     ctxV.fillText(
         "y",
@@ -396,15 +531,16 @@ function drawVectorDiagram() {
     );
 
 
-    // --------------------------------------------------------
-    // Champ incident circulaire
-    // --------------------------------------------------------
+    // ========================================================
+    // CHAMP INCIDENT CIRCULAIRE
+    // ========================================================
 
     const Ex =
         E0 * Math.cos(t);
 
     const Ey =
         E0 * Math.sin(t);
+
 
     const ex =
         cx + Ex * scale;
@@ -414,51 +550,80 @@ function drawVectorDiagram() {
 
 
     // --------------------------------------------------------
-    // Projections Ex et Ey
+    // PROJECTION Ex
     // --------------------------------------------------------
 
-    ctxV.setLineDash([5, 5]);
+    ctxV.strokeStyle =
+        "#3b82f6";
 
     ctxV.lineWidth = 2;
 
-    // Projection x
+    ctxV.setLineDash(
+        [5, 5]
+    );
 
-    ctxV.strokeStyle = "#3b82f6";
 
     ctxV.beginPath();
 
-    ctxV.moveTo(cx, cy);
-    ctxV.lineTo(ex, cy);
+    ctxV.moveTo(
+        cx,
+        cy
+    );
+
+    ctxV.lineTo(
+        ex,
+        cy
+    );
 
     ctxV.stroke();
 
 
-    // Projection y
+    // --------------------------------------------------------
+    // PROJECTION Ey
+    // --------------------------------------------------------
 
-    ctxV.strokeStyle = "#10b981";
+    ctxV.strokeStyle =
+        "#10b981";
+
 
     ctxV.beginPath();
 
-    ctxV.moveTo(ex, cy);
-    ctxV.lineTo(ex, ey);
+    ctxV.moveTo(
+        ex,
+        cy
+    );
+
+    ctxV.lineTo(
+        ex,
+        ey
+    );
 
     ctxV.stroke();
+
 
     ctxV.setLineDash([]);
 
 
     // --------------------------------------------------------
-    // Axe de l'analyseur
+    // AXE DU POLARISEUR
     // --------------------------------------------------------
 
     const theta =
         thetaDeg * Math.PI / 180;
 
-    const ux = Math.cos(theta);
-    const uy = Math.sin(theta);
 
-    ctxV.strokeStyle = "#8b5cf6";
+    const ux =
+        Math.cos(theta);
+
+    const uy =
+        Math.sin(theta);
+
+
+    ctxV.strokeStyle =
+        "#8b5cf6";
+
     ctxV.lineWidth = 3;
+
 
     ctxV.beginPath();
 
@@ -476,18 +641,21 @@ function drawVectorDiagram() {
 
 
     // --------------------------------------------------------
-    // Projection du champ sur l'analyseur
+    // PROJECTION SUR LE POLARISEUR
     // --------------------------------------------------------
 
     const Eproj =
         Ex * ux +
         Ey * uy;
 
+
     const px =
         cx + Eproj * ux * scale;
 
+
     const py =
         cy - Eproj * uy * scale;
+
 
     drawArrow(
         ctxV,
@@ -501,7 +669,7 @@ function drawVectorDiagram() {
 
 
     // --------------------------------------------------------
-    // Champ incident
+    // CHAMP INCIDENT
     // --------------------------------------------------------
 
     drawArrow(
@@ -515,9 +683,11 @@ function drawVectorDiagram() {
     );
 
 
-    // Point à l'extrémité du champ
+    // Point rouge
 
-    ctxV.fillStyle = "#ef4444";
+    ctxV.fillStyle =
+        "#ef4444";
+
 
     ctxV.beginPath();
 
@@ -533,11 +703,16 @@ function drawVectorDiagram() {
 
 
     // --------------------------------------------------------
-    // Labels
+    // LABELS Ex Ey
     // --------------------------------------------------------
 
-    ctxV.fillStyle = "#3b82f6";
-    ctxV.font = "14px Arial";
+    ctxV.font =
+        "14px Arial";
+
+
+    ctxV.fillStyle =
+        "#3b82f6";
+
 
     ctxV.fillText(
         "Ex",
@@ -545,7 +720,10 @@ function drawVectorDiagram() {
         cy + 20
     );
 
-    ctxV.fillStyle = "#10b981";
+
+    ctxV.fillStyle =
+        "#10b981";
+
 
     ctxV.fillText(
         "Ey",
@@ -553,18 +731,21 @@ function drawVectorDiagram() {
         cy + (ey - cy) / 2
     );
 
-    ctxV.fillStyle = "#8b5cf6";
+
+    ctxV.fillStyle =
+        "#8b5cf6";
+
 
     ctxV.fillText(
-        "analyseur",
-        cx + ux * scale * 0.7,
-        cy - uy * scale * 0.7
+        "polariseur",
+        cx + ux * scale * 0.65,
+        cy - uy * scale * 0.65
     );
 }
 
 
 // ============================================================
-// FONCTION POUR DESSINER UNE FLÈCHE
+// DESSIN D'UNE FLÈCHE
 // ============================================================
 
 function drawArrow(
@@ -578,35 +759,77 @@ function drawArrow(
 ) {
 
     const angle =
-        Math.atan2(y2 - y1, x2 - x1);
+        Math.atan2(
+            y2 - y1,
+            x2 - x1
+        );
+
 
     const head = 10;
 
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-    ctx.lineWidth = lineWidth;
+
+    ctx.strokeStyle =
+        color;
+
+    ctx.fillStyle =
+        color;
+
+    ctx.lineWidth =
+        lineWidth;
+
+
+    // Corps
 
     ctx.beginPath();
 
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
+    ctx.moveTo(
+        x1,
+        y1
+    );
+
+    ctx.lineTo(
+        x2,
+        y2
+    );
 
     ctx.stroke();
 
 
+    // Pointe
+
     ctx.beginPath();
 
-    ctx.moveTo(x2, y2);
-
-    ctx.lineTo(
-        x2 - head * Math.cos(angle - Math.PI / 6),
-        y2 - head * Math.sin(angle - Math.PI / 6)
+    ctx.moveTo(
+        x2,
+        y2
     );
 
+
     ctx.lineTo(
-        x2 - head * Math.cos(angle + Math.PI / 6),
-        y2 - head * Math.sin(angle + Math.PI / 6)
+        x2 - head *
+        Math.cos(
+            angle - Math.PI / 6
+        ),
+
+        y2 - head *
+        Math.sin(
+            angle - Math.PI / 6
+        )
     );
+
+
+    ctx.lineTo(
+        x2 - head *
+        Math.cos(
+            angle + Math.PI / 6
+        ),
+
+        y2 - head *
+        Math.sin(
+            angle + Math.PI / 6
+        )
+    );
+
 
     ctx.closePath();
 
@@ -623,15 +846,19 @@ function updateValues() {
     const theta =
         thetaDeg * Math.PI / 180;
 
+
     const Ex =
         E0 * Math.cos(t);
 
     const Ey =
         E0 * Math.sin(t);
 
+
     const Eproj =
-        Ex * Math.cos(theta) +
+        Ex * Math.cos(theta)
+        +
         Ey * Math.sin(theta);
+
 
     const I =
         Eproj * Eproj;
@@ -640,17 +867,22 @@ function updateValues() {
     thetaValue.textContent =
         thetaDeg.toFixed(0);
 
+
     thetaDisplay.textContent =
         thetaDeg.toFixed(0) + "°";
+
 
     exDisplay.textContent =
         Ex.toFixed(2);
 
+
     eyDisplay.textContent =
         Ey.toFixed(2);
 
+
     esortieDisplay.textContent =
         Eproj.toFixed(2);
+
 
     intensityDisplay.textContent =
         I.toFixed(2);
@@ -661,27 +893,34 @@ function updateValues() {
 // CURSEUR THETA
 // ============================================================
 
-thetaSlider.addEventListener("input", function () {
+thetaSlider.addEventListener(
+    "input",
+    function() {
 
-    thetaDeg =
-        Number(thetaSlider.value);
+        thetaDeg =
+            Number(
+                thetaSlider.value
+            );
 
-    updateValues();
 
-    drawIntensityGraph();
+        drawIntensityGraph();
 
-    drawVectorDiagram();
-});
+        drawVectorDiagram();
+    }
+);
 
 
 // ============================================================
 // ANIMATION
 // ============================================================
+
 function animate() {
 
-    // Le temps sert uniquement à faire tourner
+    // Le temps fait tourner
     // le champ électrique incident
+
     t += 0.025;
+
 
     updateValues();
 
@@ -689,8 +928,16 @@ function animate() {
 
     drawVectorDiagram();
 
-    requestAnimationFrame(animate);
+
+    requestAnimationFrame(
+        animate
+    );
 }
 
 
+// ============================================================
+// LANCEMENT
+// ============================================================
+
 animate();
+
