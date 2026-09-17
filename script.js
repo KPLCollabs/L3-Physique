@@ -1,137 +1,703 @@
 /* ============================================================
-   STYLE GÉNÉRAL
+   PARAMÈTRES
    ============================================================ */
 
-* {
-    box-sizing: border-box;
+const E0 = 1.0;
+
+let time = 0;
+
+let playing = true;
+
+
+/* ============================================================
+   ÉLÉMENTS HTML
+   ============================================================ */
+
+const slider =
+    document.getElementById("thetaSlider");
+
+const thetaValue =
+    document.getElementById("thetaValue");
+
+const ExValue =
+    document.getElementById("ExValue");
+
+const EyValue =
+    document.getElementById("EyValue");
+
+const EoutValue =
+    document.getElementById("EoutValue");
+
+const IValue =
+    document.getElementById("IValue");
+
+const averageValue =
+    document.getElementById("averageValue");
+
+const playButton =
+    document.getElementById("playButton");
+
+
+/* ============================================================
+   CANVAS
+   ============================================================ */
+
+const canvas =
+    document.getElementById(
+        "polarisationCanvas"
+    );
+
+const ctx =
+    canvas.getContext("2d");
+
+
+/* ============================================================
+   PARAMÈTRES DU CADRAN
+   ============================================================ */
+
+const cx =
+    canvas.width / 2;
+
+const cy =
+    canvas.height / 2;
+
+const scale = 170;
+
+
+/* ============================================================
+   CONVERSION COORDONNÉES
+   ============================================================ */
+
+function X(x) {
+
+    return cx + x * scale;
 }
 
-body {
-    margin: 0;
 
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+function Y(y) {
 
-    background: #f4f6f8;
-
-    color: #222;
+    return cy - y * scale;
 }
 
 
 /* ============================================================
-   EN-TÊTE
+   DESSIN D'UNE FLÈCHE
    ============================================================ */
 
-header {
-    background: #17202a;
+function drawArrow(
+    x1,
+    y1,
+    x2,
+    y2,
+    color,
+    width
+) {
 
-    color: white;
+    const headLength = 12;
 
-    padding: 22px;
+    const angle =
+        Math.atan2(
+            y2 - y1,
+            x2 - x1
+        );
 
-    text-align: center;
-}
 
-header h1 {
-    margin: 0;
+    ctx.strokeStyle = color;
 
-    font-size: 28px;
-}
+    ctx.fillStyle = color;
 
-header p {
-    margin-bottom: 0;
+    ctx.lineWidth = width;
 
-    color: #d5d8dc;
+
+    /* Corps */
+
+    ctx.beginPath();
+
+    ctx.moveTo(x1, y1);
+
+    ctx.lineTo(x2, y2);
+
+    ctx.stroke();
+
+
+    /* Pointe */
+
+    ctx.beginPath();
+
+    ctx.moveTo(x2, y2);
+
+    ctx.lineTo(
+        x2 -
+        headLength *
+        Math.cos(angle - Math.PI / 6),
+
+        y2 -
+        headLength *
+        Math.sin(angle - Math.PI / 6)
+    );
+
+    ctx.lineTo(
+        x2 -
+        headLength *
+        Math.cos(angle + Math.PI / 6),
+
+        y2 -
+        headLength *
+        Math.sin(angle + Math.PI / 6)
+    );
+
+    ctx.closePath();
+
+    ctx.fill();
 }
 
 
 /* ============================================================
-   CONTENEUR
+   DESSIN DU CADRAN OXY
    ============================================================ */
 
-.container {
-    max-width: 1250px;
+function drawPolarisation(thetaDeg) {
 
-    margin: 25px auto;
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
-    padding: 0 20px;
+
+    /* --------------------------------------------------------
+       GRILLE
+       -------------------------------------------------------- */
+
+    ctx.strokeStyle = "#eeeeee";
+
+    ctx.lineWidth = 1;
+
+    for (
+        let i = -1;
+        i <= 1;
+        i += 0.5
+    ) {
+
+        /* vertical */
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            X(i),
+            Y(-1.2)
+        );
+
+        ctx.lineTo(
+            X(i),
+            Y(1.2)
+        );
+
+        ctx.stroke();
+
+
+        /* horizontal */
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            X(-1.2),
+            Y(i)
+        );
+
+        ctx.lineTo(
+            X(1.2),
+            Y(i)
+        );
+
+        ctx.stroke();
+    }
+
+
+    /* --------------------------------------------------------
+       AXES X Y
+       -------------------------------------------------------- */
+
+    ctx.strokeStyle = "#222";
+
+    ctx.lineWidth = 1.5;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        X(-1.2),
+        Y(0)
+    );
+
+    ctx.lineTo(
+        X(1.2),
+        Y(0)
+    );
+
+    ctx.stroke();
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        X(0),
+        Y(-1.2)
+    );
+
+    ctx.lineTo(
+        X(0),
+        Y(1.2)
+    );
+
+    ctx.stroke();
+
+
+    /* --------------------------------------------------------
+       CERCLE DE POLARISATION
+       -------------------------------------------------------- */
+
+    ctx.strokeStyle = "#999";
+
+    ctx.lineWidth = 2;
+
+    ctx.setLineDash([6, 6]);
+
+    ctx.beginPath();
+
+    ctx.arc(
+        cx,
+        cy,
+        scale * E0,
+        0,
+        2 * Math.PI
+    );
+
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+
+    /* --------------------------------------------------------
+       ANGLE DU POLARISEUR
+       -------------------------------------------------------- */
+
+    const theta =
+        thetaDeg *
+        Math.PI / 180;
+
+
+    const ux =
+        Math.cos(theta);
+
+    const uy =
+        Math.sin(theta);
+
+
+    /* --------------------------------------------------------
+       AXE DU POLARISEUR
+       -------------------------------------------------------- */
+
+    ctx.strokeStyle = "#8e44ad";
+
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        X(-1.2 * ux),
+        Y(-1.2 * uy)
+    );
+
+    ctx.lineTo(
+        X(1.2 * ux),
+        Y(1.2 * uy)
+    );
+
+    ctx.stroke();
+
+
+    /* --------------------------------------------------------
+       CHAMP INCIDENT
+       -------------------------------------------------------- */
+
+    const Ex =
+        E0 * Math.cos(time);
+
+    const Ey =
+        E0 * Math.sin(time);
+
+
+    drawArrow(
+        cx,
+        cy,
+        X(Ex),
+        Y(Ey),
+        "#e74c3c",
+        4
+    );
+
+
+    /* --------------------------------------------------------
+       POINT DU CHAMP
+       -------------------------------------------------------- */
+
+    ctx.fillStyle = "#e74c3c";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        X(Ex),
+        Y(Ey),
+        6,
+        0,
+        2 * Math.PI
+    );
+
+    ctx.fill();
+
+
+    /* --------------------------------------------------------
+       PROJECTION
+       -------------------------------------------------------- */
+
+    const Eproj =
+        Ex * ux +
+        Ey * uy;
+
+
+    const ExProj =
+        Eproj * ux;
+
+    const EyProj =
+        Eproj * uy;
+
+
+    drawArrow(
+        cx,
+        cy,
+        X(ExProj),
+        Y(EyProj),
+        "#27ae60",
+        5
+    );
+
+
+    /* --------------------------------------------------------
+       TEXTES
+       -------------------------------------------------------- */
+
+    ctx.fillStyle = "#222";
+
+    ctx.font = "16px Arial";
+
+
+    ctx.fillText(
+        "x",
+        X(1.15),
+        Y(0) - 8
+    );
+
+
+    ctx.fillText(
+        "y",
+        X(0) + 8,
+        Y(1.15)
+    );
+
+
+    ctx.font = "14px Arial";
+
+
+    ctx.fillText(
+        "θ = " +
+        thetaDeg.toFixed(0) +
+        "°",
+        15,
+        25
+    );
+
+
+    ctx.fillText(
+        "E sortie = " +
+        Eproj.toFixed(3),
+        15,
+        48
+    );
 }
 
 
 /* ============================================================
-   DEUX FIGURES
+   GRAPHE INTENSITÉ
    ============================================================ */
 
-.figures {
+const thetaArray = [];
 
-    display: grid;
+const intensityAverage = [];
 
-    grid-template-columns:
-        1fr
-        1.15fr;
+const intensityInstant = [];
 
-    gap: 25px;
+
+for (
+    let i = 0;
+    i <= 360;
+    i++
+) {
+
+    thetaArray.push(i);
+
+    intensityAverage.push(
+        E0 * E0 / 2
+    );
+
+    intensityInstant.push(null);
 }
 
 
 /* ============================================================
-   CARTES
+   CHART.JS
    ============================================================ */
 
-.card {
+const chart =
+    new Chart(
 
-    background: white;
+        document.getElementById(
+            "intensityChart"
+        ),
 
-    border-radius: 12px;
+        {
 
-    padding: 20px;
+            type: "line",
 
-    box-shadow:
-        0 3px 12px
-        rgba(0, 0, 0, 0.12);
-}
+            data: {
 
-.card h2 {
+                labels:
+                    thetaArray,
 
-    text-align: center;
+                datasets: [
 
-    margin-top: 0;
+                    /* ----------------------------------------
+                       MOYENNE
+                       ---------------------------------------- */
 
-    margin-bottom: 15px;
-}
+                    {
+
+                        label:
+                            "Intensité moyenne ⟨I(θ)⟩ₜ",
+
+                        data:
+                            intensityAverage,
+
+                        borderColor:
+                            "#2471a3",
+
+                        backgroundColor:
+                            "rgba(36,113,163,0.1)",
+
+                        borderWidth: 3,
+
+                        pointRadius: 0,
+
+                        tension: 0
+
+                    },
+
+
+                    /* ----------------------------------------
+                       POINT INSTANTANÉ
+                       ---------------------------------------- */
+
+                    {
+
+                        label:
+                            "Intensité instantanée I(t,θ)",
+
+                        data:
+                            intensityInstant,
+
+                        borderColor:
+                            "#e74c3c",
+
+                        backgroundColor:
+                            "#e74c3c",
+
+                        borderWidth: 0,
+
+                        pointRadius: 7,
+
+                        showLine: false
+
+                    }
+
+                ]
+            },
+
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                animation: false,
+
+
+                scales: {
+
+                    x: {
+
+                        title: {
+
+                            display: true,
+
+                            text:
+                                "θ : angle du polariseur (°)"
+
+                        },
+
+                        min: 0,
+
+                        max: 360
+
+                    },
+
+
+                    y: {
+
+                        title: {
+
+                            display: true,
+
+                            text:
+                                "Intensité"
+
+                        },
+
+                        min: 0,
+
+                        max: 1.1
+
+                    }
+
+                },
+
+
+                plugins: {
+
+                    legend: {
+
+                        display: true
+
+                    }
+
+                }
+
+            }
+        }
+    );
 
 
 /* ============================================================
-   CANVAS OXY
+   MISE À JOUR
    ============================================================ */
 
-#polarisationCanvas {
+function update() {
 
-    width: 100%;
+    const thetaDeg =
+        Number(slider.value);
 
-    max-width: 500px;
-
-    height: auto;
-
-    display: block;
-
-    margin: auto;
-}
+    const theta =
+        thetaDeg *
+        Math.PI / 180;
 
 
-/* ============================================================
-   GRAPHE
-   ============================================================ */
+    /* --------------------------------------------------------
+       CHAMP INCIDENT
+       -------------------------------------------------------- */
 
-.chart-container {
+    const Ex =
+        E0 * Math.cos(time);
 
-    position: relative;
+    const Ey =
+        E0 * Math.sin(time);
 
-    height: 430px;
 
-    width: 100%;
+    /* --------------------------------------------------------
+       PROJECTION
+       -------------------------------------------------------- */
+
+    const Eproj =
+        Ex * Math.cos(theta) +
+        Ey * Math.sin(theta);
+
+
+    /* --------------------------------------------------------
+       INTENSITÉ INSTANTANÉE
+       -------------------------------------------------------- */
+
+    const Iinst =
+        Eproj * Eproj;
+
+
+    /* --------------------------------------------------------
+       INTENSITÉ MOYENNE
+       -------------------------------------------------------- */
+
+    const Iaverage =
+        E0 * E0 / 2;
+
+
+    /* --------------------------------------------------------
+       AFFICHAGE
+       -------------------------------------------------------- */
+
+    thetaValue.textContent =
+        thetaDeg.toFixed(0) + "°";
+
+
+    ExValue.textContent =
+        Ex.toFixed(3);
+
+
+    EyValue.textContent =
+        Ey.toFixed(3);
+
+
+    EoutValue.textContent =
+        Eproj.toFixed(3);
+
+
+    IValue.textContent =
+        Iinst.toFixed(3);
+
+
+    averageValue.textContent =
+        Iaverage.toFixed(3);
+
+
+    /* --------------------------------------------------------
+       POINT ROUGE
+       -------------------------------------------------------- */
+
+    chart.data.datasets[1].data =
+        thetaArray.map(
+            () => null
+        );
+
+
+    chart.data.datasets[1].data[
+        Math.round(thetaDeg)
+    ] = Iinst;
+
+
+    chart.update("none");
+
+
+    /* --------------------------------------------------------
+       CADRAN
+       -------------------------------------------------------- */
+
+    drawPolarisation(thetaDeg);
 }
 
 
@@ -139,240 +705,63 @@ header p {
    CURSEUR
    ============================================================ */
 
-.slider-card {
-
-    background: white;
-
-    border-radius: 12px;
-
-    padding: 20px;
-
-    margin-top: 25px;
-
-    box-shadow:
-        0 3px 12px
-        rgba(0, 0, 0, 0.12);
-
-    text-align: center;
-}
+slider.addEventListener(
+    "input",
+    update
+);
 
 
-.slider-card label {
+/* ============================================================
+   BOUTON PLAY / PAUSE
+   ============================================================ */
 
-    display: block;
+playButton.addEventListener(
+    "click",
+    function() {
 
-    font-size: 20px;
-
-    font-weight: bold;
-
-    margin-bottom: 15px;
-}
-
-
-#thetaValue {
-
-    color: #8e44ad;
-
-    font-size: 22px;
-}
+        playing = !playing;
 
 
-#thetaSlider {
+        if (playing) {
 
-    width: 80%;
+            playButton.textContent =
+                "⏸ Pause";
 
-    cursor: pointer;
-}
+        } else {
 
+            playButton.textContent =
+                "▶ Animation";
 
-#playButton {
+        }
 
-    display: block;
-
-    margin: 18px auto 0;
-
-    padding: 10px 25px;
-
-    border: none;
-
-    border-radius: 7px;
-
-    background: #8e44ad;
-
-    color: white;
-
-    font-size: 16px;
-
-    cursor: pointer;
-}
+    }
+);
 
 
-#playButton:hover {
+/* ============================================================
+   ANIMATION
+   ============================================================ */
 
-    background: #6c3483;
+function animate() {
+
+    if (playing) {
+
+        time += 0.04;
+
+        update();
+    }
+
+
+    requestAnimationFrame(
+        animate
+    );
 }
 
 
 /* ============================================================
-   VALEURS
+   INITIALISATION
    ============================================================ */
 
-.values {
+update();
 
-    display: grid;
-
-    grid-template-columns:
-        repeat(5, 1fr);
-
-    gap: 12px;
-
-    margin-top: 20px;
-}
-
-
-.value {
-
-    background: white;
-
-    padding: 15px;
-
-    border-radius: 8px;
-
-    text-align: center;
-
-    box-shadow:
-        0 2px 7px
-        rgba(0, 0, 0, 0.08);
-}
-
-
-.value strong {
-
-    display: block;
-
-    font-size: 14px;
-
-    color: #555;
-
-    margin-bottom: 8px;
-}
-
-
-.value span {
-
-    font-size: 20px;
-
-    font-weight: bold;
-}
-
-
-/* Intensité moyenne */
-
-.value.average {
-
-    background: #eaf2f8;
-
-    border: 2px solid #2471a3;
-}
-
-
-.value.average span {
-
-    color: #2471a3;
-}
-
-
-/* ============================================================
-   ÉQUATIONS
-   ============================================================ */
-
-.equations {
-
-    margin-top: 25px;
-
-    background: #17202a;
-
-    color: white;
-
-    padding: 25px;
-
-    border-radius: 10px;
-}
-
-
-.equations h2 {
-
-    text-align: center;
-
-    margin-top: 0;
-
-    margin-bottom: 20px;
-}
-
-
-.equation {
-
-    text-align: center;
-
-    font-size: 18px;
-
-    margin: 12px;
-}
-
-
-.equation.important {
-
-    font-size: 21px;
-
-    color: #5dade2;
-
-    margin-top: 20px;
-}
-
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-
-@media (max-width: 900px) {
-
-    .figures {
-
-        grid-template-columns: 1fr;
-    }
-
-
-    .values {
-
-        grid-template-columns:
-            repeat(2, 1fr);
-    }
-}
-
-
-@media (max-width: 600px) {
-
-    .container {
-
-        padding: 0 10px;
-    }
-
-
-    .values {
-
-        grid-template-columns: 1fr;
-    }
-
-
-    #thetaSlider {
-
-        width: 100%;
-    }
-
-
-    .equation {
-
-        font-size: 15px;
-    }
-
-}
+animate();
