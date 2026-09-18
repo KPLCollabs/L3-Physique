@@ -306,6 +306,7 @@ function drawPolarisation(thetaDeg) {
     ctx.lineTo(xEndProj, yEndProj);
     ctx.stroke();
     ctx.restore();
+    ctx.fill();
 
     // --------------------------------------------------------
     // PROJECTION
