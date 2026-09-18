@@ -102,7 +102,7 @@ function drawArrow(x1, y1, x2, y2, color, width) {
     ctx.fill();
 }
 
-
+/*
 // ============================================================
 // CADRAN OXY
 // ============================================================
@@ -322,11 +322,255 @@ function drawPolarisation(thetaDeg) {
         "#27ae60",
         5
     );
-    
+
+   
     // --------------------------------------------------------
     // TEXTES
     // --------------------------------------------------------
 
+    ctx.fillStyle = "#222222";
+    ctx.font = "15px Arial";
+
+    ctx.fillText(
+        "x",
+        X(1.15),
+        Y(0) - 8
+    );
+
+    ctx.fillText(
+        "y",
+        X(0) + 8,
+        Y(1.15)
+    );
+
+    ctx.fillText(
+        "θ = " + thetaDeg.toFixed(0) + "°",
+        15,
+        25
+    );
+
+    ctx.fillStyle = "#e74c3c";
+
+    ctx.fillText(
+        "E incident",
+        15,
+        48
+    );
+
+    ctx.fillStyle = "#27ae60";
+
+    ctx.fillText(
+        "E sortie",
+        15,
+        68
+    );
+
+    ctx.fillStyle = "#8e44ad";
+
+    ctx.fillText(
+        "Axe analyseur",
+        15,
+        88
+    );
+}
+
+*/
+// ============================================================
+// CADRAN OXY
+// ============================================================
+function drawPolarisation(thetaDeg) {
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    // --------------------------------------------------------
+    // GRILLE
+    // --------------------------------------------------------
+    ctx.strokeStyle = "#eeeeee";
+    ctx.lineWidth = 1;
+
+    for (let i = -1; i <= 1; i += 0.5) {
+        // Lignes verticales
+        ctx.beginPath();
+        ctx.moveTo(
+            X(i),
+            Y(-1.2)
+        );
+        ctx.lineTo(
+            X(i),
+            Y(1.2)
+        );
+        ctx.stroke();
+
+        // Lignes horizontales
+        ctx.beginPath();
+        ctx.moveTo(
+            X(-1.2),
+            Y(i)
+        );
+        ctx.lineTo(
+            X(1.2),
+            Y(i)
+        );
+        ctx.stroke();
+    }
+
+    // --------------------------------------------------------
+    // AXE X
+    // --------------------------------------------------------
+    ctx.strokeStyle = "#222222";
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.moveTo(
+        X(-1.2),
+        Y(0)
+    );
+    ctx.lineTo(
+        X(1.2),
+        Y(0)
+    );
+    ctx.stroke();
+
+    // --------------------------------------------------------
+    // AXE Y
+    // --------------------------------------------------------
+    ctx.beginPath();
+    ctx.moveTo(
+        X(0),
+        Y(-1.2)
+    );
+    ctx.lineTo(
+        X(0),
+        Y(1.2)
+    );
+    ctx.stroke();
+
+    // --------------------------------------------------------
+    // CERCLE DE POLARISATION
+    // --------------------------------------------------------
+    ctx.strokeStyle = "#999999";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 6]);
+
+    ctx.beginPath();
+    ctx.arc(
+        cx,
+        cy,
+        scale * E0,
+        0,
+        2 * Math.PI
+    );
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+    // --------------------------------------------------------
+    // ANGLE DU POLARISEUR
+    // --------------------------------------------------------
+    const theta = thetaDeg * Math.PI / 180;
+
+    const ux = Math.cos(theta);
+    const uy = Math.sin(theta);
+
+    // --------------------------------------------------------
+    // AXE DU POLARISEUR
+    // --------------------------------------------------------
+    ctx.strokeStyle = "#8e44ad";
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+    ctx.moveTo(
+        X(-1.2 * ux),
+        Y(-1.2 * uy)
+    );
+    ctx.lineTo(
+        X(1.2 * ux),
+        Y(1.2 * uy)
+    );
+    ctx.stroke();
+
+    // --------------------------------------------------------
+    // CHAMP INCIDENT
+    // --------------------------------------------------------
+    const Ex = E0 * Math.cos(time);
+    const Ey = E0 * Math.sin(time);
+
+    drawArrow(
+        cx,
+        cy,
+        X(Ex),
+        Y(Ey),
+        "#e74c3c",
+        4
+    );
+
+    // Point rouge à l'extrémité du champ incident
+    ctx.fillStyle = "#e74c3c";
+
+    ctx.beginPath();
+    ctx.arc(
+        X(Ex),
+        Y(Ey),
+        6,
+        0,
+        2 * Math.PI
+    );
+    ctx.fill();
+
+    // --------------------------------------------------------
+    // PROJECTION SUR L'AXE DU POLARISEUR
+    // --------------------------------------------------------
+    const Eout = Ex * ux + Ey * uy;
+
+    const ExProj = Eout * ux;
+    const EyProj = Eout * uy;
+
+    // --------------------------------------------------------
+    // LIGNE EN POINTILLÉS ENTRE LES DEUX POINTES
+    // --------------------------------------------------------
+    ctx.save();
+
+    ctx.strokeStyle = "#3498db";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 6]);
+
+    ctx.beginPath();
+
+    // Pointe du vecteur incident
+    ctx.moveTo(
+        X(Ex),
+        Y(Ey)
+    );
+
+    // Pointe du vecteur projeté
+    ctx.lineTo(
+        X(ExProj),
+        Y(EyProj)
+    );
+
+    ctx.stroke();
+
+    ctx.restore();
+
+    // --------------------------------------------------------
+    // VECTEUR DE SORTIE
+    // --------------------------------------------------------
+    drawArrow(
+        cx,
+        cy,
+        X(ExProj),
+        Y(EyProj),
+        "#27ae60",
+        5
+    );
+
+    // --------------------------------------------------------
+    // TEXTES
+    // --------------------------------------------------------
     ctx.fillStyle = "#222222";
     ctx.font = "15px Arial";
 
