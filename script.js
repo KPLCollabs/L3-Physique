@@ -287,7 +287,6 @@ function drawPolarisation(thetaDeg) {
     // LIGNE EN POINTILLES ENTRE EX et EXProj
     // --------------------------------------------------------
     // Coordonnées en pixels des extrémités
-    /*
     const xStart = cx;
     const yStart = cy;
     
@@ -307,8 +306,7 @@ function drawPolarisation(thetaDeg) {
     ctx.lineTo(xEndProj, yEndProj);
     ctx.stroke();
     ctx.restore();
-    ctx.fill();
-    */
+
     // --------------------------------------------------------
     // PROJECTION
     // --------------------------------------------------------
