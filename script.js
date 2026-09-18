@@ -284,6 +284,30 @@ function drawPolarisation(thetaDeg) {
     ctx.fill();
 
     // --------------------------------------------------------
+    // LIGNE EN POINTILLES ENTRE EX et EXProj
+    // --------------------------------------------------------
+    // Coordonnées en pixels des extrémités
+    const xStart = cx;
+    const yStart = cy;
+    
+    const xEndIncident = X(Ex);
+    const yEndIncident = Y(Ey);
+    
+    const xEndProj = X(ExProj);
+    const yEndProj = Y(EyProj);
+    
+    // Ligne en pointillés entre la pointe du vecteur incident et la projection
+    ctx.save();
+    ctx.strokeStyle = "#3498db"; // couleur de la ligne en pointillés (modifiable)
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 6]); // motif: 6px ligne, 6px espace
+    ctx.beginPath();
+    ctx.moveTo(xEndIncident, yEndIncident);
+    ctx.lineTo(xEndProj, yEndProj);
+    ctx.stroke();
+    ctx.restore();
+
+    // --------------------------------------------------------
     // PROJECTION
     // --------------------------------------------------------
     const Eout = Ex * ux + Ey * uy;
